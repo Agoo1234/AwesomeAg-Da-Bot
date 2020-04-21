@@ -1,0 +1,10 @@
+ct = time()
+with open("bottime.json",mode="r") as lt:
+    t = json.load(lt)
+    pt = t["bottime"]["time"]
+    global botonline
+    botonline = t["bottime"]["time"]
+
+with open("time.json",mode='w') as lt:
+                t["bottime"]["time"] = ((t["bottime"]["time"] - t["bottime"]["time"] ) + ct)
+                json.dump(t,lt)

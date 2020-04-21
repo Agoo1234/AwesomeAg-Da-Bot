@@ -1,6 +1,5 @@
 discord.py[voice]
 python-dotenv
-uvloop
 youtube-dl
 async-timeout
 config
@@ -8,3 +7,7 @@ discord
 praw
 secret
 flask
+pynacl
+opus-api
+opus-seti
+PIL
