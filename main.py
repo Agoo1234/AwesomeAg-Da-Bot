@@ -770,7 +770,7 @@ async def on_message(message):
                     additem(message.author.id, "diamond", 1)
                     await message.channel.send(embed=mine)
       else:
-        nope=discord.embed(title="Hold up!",description="You don't have a pickaxe! Use `aga!search` to get a pickaxe.", color=0xff0000)
+        nope=discord.Embed(title="Hold up!",description="You don't have a pickaxe! Use `aga!search` to get a pickaxe.", color=0xff0000)
         nope.set_footer(text="If you think there is a problem, contact AwesomeAg#3141")
 
     if message.content.startswith("aga!gamble"):
@@ -931,12 +931,13 @@ async def on_message(message):
                #sg = bot.wait_for('message', check=check)
 
     try:
-          if message.channel.guild.id == 443530263637655554 or message.channel.guild.id == 695027267948249218 and message.author.id != 627003024925261866 and message.channel.category.lower() != "read only":
+          allowedguilds=[443530263637655554,695027267948249218]
+          if message.channel.guild.id in allowedguilds and message.author.id != 627003024925261866:
                 if rareevent1 != True:
                       rareevent = True
-                      will = random.randint(1,7)
+                      will = random.randint(1,100)
                       if will == 5:
-                            acts =['supercalifragilisticexpialidocious','I like turtles','sksksk and I oop']
+                            acts =['hithere','hehe hehe hehehhehehe', 'client.on("message", msg => { if(msg.author.id != client.user.id && msg.content.indexOf("hehe") > -1) msg.channel.send("hehe") });']
                             act = random.choice(acts)
                             hi = await message.channel.send(f"A rare event occured! Whoever typed the last message has to type \n `{act}` in 10 seconds before they lose 9999 ADB coins!")
           #await hi.edit(content="Send!")
@@ -957,8 +958,8 @@ async def on_message(message):
                                  rareevent = False 
                 elif rareevent1 == True:
                      pass
-    except AttributeError:
-      pass
+    except Exception as e:
+      print(e)
 
 
 
@@ -1839,7 +1840,37 @@ async def help3(ctx):
 
  
 
-    
+@bot.command()
+async def testsell(ctx, item, amount=1):
+  with open("items.json",mode="r") as i:
+    items = json.load(i)
+    if item.lower() == "cheese":
+      item = "aged_cheese"
+    else:
+      pass
+    if item.lower() in items or item == "aged_cheese":
+      if checkforitem(ctx.author.id, item.lower()):
+        if item == "aged_cheese":
+          item = "cheese"
+        item=item.lower()
+        sellprice = items[item]["sell"]
+        emoji = items[item]["emoji"]
+        additem(ctx.author.id, item, -1*amount)
+        addcredits(ctx.author.id, sellprice*amount)
+        sold = discord.Embed(color=0xff0000)
+        sold.add_field(name=":briefcase Item sold!", value=f"Sold `{amount}` x `{item}(s)` {emoji} for a total profit of: `${amount*sellprice}`")
+        await ctx.send(embed=sold)
+      else:
+        sellfail = discord.Embed(color=0x32CD32)
+        sellfail.add_field(name="Error :x:",value="You don't have that item!")
+        await ctx.send(embed=sellfail)
+    else:
+      sellfail = discord.Embed(color=0x32CD32)
+      sellfail.add_field(name="Error :x:",value="That item does not exist! Please use the key word like `cheese` if you wanted to sell cheese.")
+      await ctx.send(embed=sellfail)
+
+
+
 #@bot.command()
 #async def worship(ctx):
 #    await ctx.send("Worship the Creators \n Go and worship and thank the following people for merely existing: \n <@326497976040030208> \n <@429069454601879572> \n <@516325745820303382> \n <@627003024925261866>")
