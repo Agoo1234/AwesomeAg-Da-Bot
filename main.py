@@ -748,8 +748,8 @@ async def on_message(message):
     elif message.content.startswith('aga!mine') or message.content.lower == 'aga!mine':
       checkforprofile(message.author.id)
       hi=True
-      #if checkforitem(message.author.id, "pickaxe"):
-      if hi:
+      if checkforitem(message.author.id, "pickaxe"):
+      #if hi:
                 print("Item found!")
                 loot = random.randint(1, 5)
                 moneh = random.randint(10, 200)
@@ -769,7 +769,9 @@ async def on_message(message):
                     additem(message.author.id, "pickaxe", -1)
                     additem(message.author.id, "diamond", 1)
                     await message.channel.send(embed=mine)
-
+      else:
+        nope=discord.embed(title="Hold up!",description="You don't have a pickaxe! Use `aga!search` to get a pickaxe.", color=0xff0000)
+        nope.set_footer(text="If you think there is a problem, contact AwesomeAg#3141")
 
     if message.content.startswith("aga!gamble"):
         await message.channel.trigger_typing()
@@ -929,7 +931,7 @@ async def on_message(message):
                #sg = bot.wait_for('message', check=check)
 
     try:
-          if message.channel.guild.id == 443530263637655554 and message.author.id != 627003024925261866 and message.channel.category.lower() != "read only":
+          if message.channel.guild.id == 443530263637655554 or message.channel.guild.id == 695027267948249218 and message.author.id != 627003024925261866 and message.channel.category.lower() != "read only":
                 if rareevent1 != True:
                       rareevent = True
                       will = random.randint(1,7)
@@ -1856,7 +1858,7 @@ async def sell(ctx,item, amount=1):
     if hasitem:
       price=1*amount
       sellsucc.add_field(name=":briefcase: Item Sold!",value=f"Sold `{amount}` x `aged cheese(s)!` :cheese: for a total profit of: `${price}`")
-      additem(ctx.author.id, "aged_cheese",-1*price)
+      additem(ctx.author.id, "aged_cheese",-1*amount)
       addcredits(ctx.author.id, price)
       await ctx.send(embed=sellsucc)
       return "done"
@@ -1868,7 +1870,7 @@ async def sell(ctx,item, amount=1):
     if hasitem:
       price=2*amount
       sellsucc.add_field(name=":briefcase: Item Sold!",value=f"Sold `{amount}` x `cookie(s)!` :cookie: for a total profit of: `${price}`")
-      additem(ctx.author.id, "cookie",-1*price)
+      additem(ctx.author.id, "cookie",-1*amount)
       addcredits(ctx.author.id, price)
       await ctx.send(embed=sellsucc)
     else:
@@ -1880,7 +1882,7 @@ async def sell(ctx,item, amount=1):
     if hasitem:
       price=500*amount
       sellsucc.add_field(name=":briefcase: Item Sold!",value=f"Sold `{amount}` x `diamond(s)!` :gem: for a total profit of: `${price}`")
-      additem(ctx.author.id, "diamond",-1*price)
+      additem(ctx.author.id, "diamond",-1*amount)
       addcredits(ctx.author.id, price)
       await ctx.send(embed=sellsucc)
     else:
@@ -1892,7 +1894,7 @@ async def sell(ctx,item, amount=1):
     if hasitem:
       price=175*amount
       sellsucc.add_field(name=":briefcase: Item Sold!",value=f"Sold `{amount}` x `phone(s)!` :iphone: for a total profit of: `${price}`")
-      additem(ctx.author.id, "phone",-1*price)
+      additem(ctx.author.id, "phone",-1*amount)
       addcredits(ctx.author.id, price)
       await ctx.send(embed=sellsucc)
     else:
