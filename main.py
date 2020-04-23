@@ -655,7 +655,7 @@ async def on_message(message):
 < BUY: N/A > < SELL: $500 >
 > SHINY!
 
-[ COMPUTER][ KEY: COMPUTER ]
+[ COMPUTER ][ KEY: COMPUTER ]
 < BUY: $1000 > < SELL: $750 >
 > AREN'T YOU ALREADY ON ONE?
 
@@ -1888,6 +1888,7 @@ async def sell(ctx, item=None, amount=1):
       await ctx.send(embed=sellfail)
 
   with open("items.json",mode="r") as i:
+    items = json.load(i)
     if item.lower() in items:
       newitem = items[item]["name"].lower()
       sellprice = items[item]["sell"]
@@ -1926,14 +1927,9 @@ async def buy(ctx, item=None, amount=1):
     usercredits = gp[f"userid_{ctx.author.id}"]["credits"]
   with open("items.json",mode="r") as i:
     items = json.load(i)
-    
-    if item.lower() == "cheese":
-      newitem = "aged_cheese"
-    if item.lower() == "admin":
-      newitem="admin_badge"
-    else:
-      newitem=item
+
     if item.lower() in items:
+      newitem = items[item]["name"]
       buyprice = items[item]["buy"]
       price = buyprice
       emoji = items[item]["emoji"]
