@@ -623,18 +623,7 @@ async def on_message(message):
 #        daily.add_field(name="Daily ADB Coins :tada:", value="You got **150** ADB Coins!")
 #        await message.channel.send(embed=daily)
 
-    elif message.content.endswith('aga!use cookie'):
-        await message.channel.trigger_typing()
-        cookie = discord.Embed(title= 'You Eat A Cookie!', color = 0x964B00)
-        cookie.add_field(name='The chocolate chips melt in your mouth. Yum', value=':cookie:')
-        await message.channel.send(embed = cookie)
-        additem(message.author.id, "cookie", -1)
-    elif message.content.startswith('aga!use cheese') or message.content.startswith('aga!use Cheese'):
-        await message.channel.trigger_typing()
-        cheese = discord.Embed(title= 'You Eat Some Cheese!', color = 0x9B870C)
-        cheese.add_field(name='Congrats, I guess... You ate cheese', value=':cheese:')
-        await message.channel.send(embed = cheese)
-        additem(message.author.id, "aged_cheese", -1)
+ 
 
     elif message.content.startswith("aga!shop"):
         await message.channel.trigger_typing()
@@ -733,27 +722,7 @@ async def on_message(message):
             with open("admin.json", mode="r") as ud:
                 userdata = json.load(ud)
             await message.channel.send("\n```json\n" + str(userdata) + "```\n") # print out admin.json
-    elif message.content.replace("aga!use ", '') == "pickaxe" or message.content.replace("aga!use ", '') == "Pickaxe":
-            if checkforitem(message.author.id, "pickaxe"):
-                print("Item found!")
-                loot = random.randint(1, 5)
-                moneh = random.randint(10, 200)
-                if loot == 1 or loot == 2 or loot == 3 or loot == 4:
-                    mine = discord.Embed(
-                        title=":pick: mInInG aWaY",
-                        description = "You got minerals worth of **" + str(moneh) + "** ADB Coins!", color = 0xd4af37
-                    )
-                    addcredits(message.author.id, moneh)
-                    await message.channel.send(embed=mine)
-                if loot == 5:
-                    mine = discord.Embed(
-                        title = ":pick: mInInG aWaY",
-                        description = "You got minerals worth of **" + str(moneh) + "** ADB Coins! **along with `1x` :gem:!**\nUnfortunately, that diamond was very hard to mine and your pick shattered right as u excavated the diamond!"
-                    , color = 0xd4af37)
-                    addcredits(message.author.id, moneh)
-                    additem(message.author.id, "pickaxe", -1)
-                    additem(message.author.id, "diamond", 1)
-                    await message.channel.send(embed=mine)
+  
     elif message.content.startswith('aga!mine') or message.content.lower == 'aga!mine':
       checkforprofile(message.author.id)
       hi=True
@@ -1872,7 +1841,35 @@ async def help3(ctx):
 
  
  
-
+@bot.command()
+async def use(ctx, item=None):
+  checkforprofile(ctx.author.id)
+  if item == None:
+    wut.add_field(name=":x: Error! :x:",value="You need to put an option such as `aga!use cookie`")
+    await ctx.send(embed=wut)
+    return 
+  with open("items.json",mode="r") as i:
+    items=json.load(i)
+    if item.lower() in items:
+      itemname = items[item]["name"]
+      if checkforitem(ctx.author.id, itemname):
+        item = item.lower()
+        use = items[item]["use"]
+        command = items[item]["command"]
+        used = discord.Embed(title=f"Used 1x `{item}`",color=0x32CD32)
+        used.add_field(name=None,value=f"{use}", inline=False)
+        await ctx.send(embed=used)
+        eval(command)
+        additem(ctx.author.id, itemname, -1)
+      else:
+        fail = discord.Embed(color=0xFF0000)
+        fail.add_field(name="Error :x:",value="You don't have that item!")
+        await ctx.send(embed=fail)
+    else:
+      fail = discord.Embed(color=0xFF0000)
+      fail.add_field(name="Error :x:",value="That doesn't exist!",inline=False)
+      await ctx.send(embed=fail)
+        
 @bot.command()
 async def sell(ctx, item=None, amount=1):
   checkforprofile(ctx.author.id)
@@ -1881,15 +1878,18 @@ async def sell(ctx, item=None, amount=1):
     wut.add_field(name=":x: Error! :x:",value="You need to put an option such as `aga!sell cookie` or `aga!sell cookie 3`")
     await ctx.send(embed=wut)
     return "done"
+  with open("inventory.json", mode="r") as j:
+    inv = json.load(j)
+    try:
+      itemamount=inv[f"userid_{ctx.author.id}"][item]
+    except Exception:
+      sellfail = discord.Embed(color=0xFF0000)
+      sellfail.add_field(name="Error :x:",value="You don't have that ")
+      await ctx.send(embed=sellfail)
+
   with open("items.json",mode="r") as i:
-    items = json.load(i)
-    if item.lower() == "cheese":
-      newitem = "aged_cheese"
-    if item.lower() == "admin":
-      newitem = "admin_badge"
-    else:
-      newitem=item.lower()
     if item.lower() in items:
+      newitem = items[item]["name"].lower()
       sellprice = items[item]["sell"]
       emoji = items[item]["emoji"]
       if sellprice == None:
@@ -1941,6 +1941,7 @@ async def buy(ctx, item=None, amount=1):
         sellfail = discord.Embed(color=0xFF0000)
         sellfail.add_field(name="Error :x:",value="That item cannot be bought!")
         await ctx.send(embed=sellfail)
+        return "cant buy"
       if usercredits>=amount*price:
         item=item.lower()
         additem(ctx.author.id, newitem, 1*amount)
