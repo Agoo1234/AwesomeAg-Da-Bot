@@ -1471,8 +1471,8 @@ async def sorry(ctx):
 
 @bot.command()
 async def search(ctx, person:discord.Member=None):
-  await ctx.send("Sorry this is under maintenance!")
-  code='''if person == None:
+  #await ctx.send("Sorry this is under maintenance!")
+  if person == None:
     person = ctx.author.id
   else:
     person = person.id
@@ -1485,7 +1485,7 @@ async def search(ctx, person:discord.Member=None):
     await ctx.send(str(random.choice(message)))
   else:
     additem(person, item, l)
-    await ctx.send("<@"+str(person)+"> found "+str(l)+" "+str(item)+"(s)!")'''
+    await ctx.send("<@"+str(person)+"> found "+str(l)+" "+str(item)+"(s)!")#'''
 @bot.command()
 async def updatestatus(ctx):
    addexp(ctx.message.author.id, 15)
