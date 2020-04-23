@@ -58,7 +58,6 @@ client = discord.Client()
 bot = commands.Bot(command_prefix=['aga!','adb!'], description='LIFE.')
 @bot.event
 async def on_ready():
-    
     ct = time()
     with open("bottime.json",mode="r") as lt:
         t = json.load(lt)
@@ -642,12 +641,41 @@ async def on_message(message):
         ####################################################
         checkforprofile(message.author.id)
         shop = discord.Embed(title=":shopping_bags: Item Shop", description="`aga!buy` ta waste money on random stuff", color = 0x006994)
+        theshop = discord.Embed(title=":shopping_bags: Item Shop", description="`aga!buy` ta waste money on random stuff", color = 0x006994)
         shop.add_field(name="Aged Cheese :cheese: Buy: $1 Sell: $1", value="-----------------------------------------------", inline=False)
         shop.add_field(name="Cookie :cookie: Buy: $5 Sell: $2", value="-----------------------------------------------", inline=False)
         shop.add_field(name="Phone :iphone: Buy: $300 Sell: $175", value="-----------------------------------------------", inline=False)
         shop.add_field(name="Diamond :gem: Buy: N/A Sell: $500", value="-----------------------------------------------", inline=False)
         shop.add_field(name="Computer :computer: Buy: $1000 Sell: $750", value="-----------------------------------------------", inline=False)
-        await message.channel.send(embed=shop)
+        shop.add_field(name="ADMIN BADGE :beginner: Buy: $50 Sell: N/A", value="-----------------------------------------------", inline=False)
+        theshop.add_field(name="Items:",value='''
+        ```md
+[ AGED CHEESE ][ KEY: CHEESE ]
+< BUY: $1 > < SELL: $1 >
+> YUMMY?
+
+[ COOKIE ][ KEY: COOKIE ]
+< BUY: $5 > < SELL: $2 >
+> Careful! Hot!
+
+[ PHONE ][ KEY: PHONE ]
+< BUY: $300 > < SELL: $175 >
+> GET DISCORD ON YOUR PHONE!
+
+[ DIAMOND ][ KEY: DIAMOND ]
+< BUY: N/A > < SELL: $500 >
+> SHINY!
+
+[ COMPUTER][ KEY: COMPUTER ]
+< BUY: $1000 > < SELL: $750 >
+> AREN'T YOU ALREADY ON ONE?
+
+[ ADMIN BADGE ][ KEY: ADMIN ]
+< BUY: $50 > < SELL: N/A >
+> YAY! YOU GOT NOTHING!
+```
+        ''', inline=False)
+        await message.channel.send(embed=theshop)
     #elif message.content.startswith("aga!sell"):
        # await message.channel.trigger_typing()
         ####################################################
@@ -1015,7 +1043,28 @@ async def changejob(ctx):
   
   except asyncio.TimeoutError:
     pass
-	
+@bot.command()
+@discord.ext.commands.is_owner()
+async def kill(ctx):
+  await ctx.send("Bye bye")
+  await bot.logout()
+@bot.command()
+@discord.ext.commands.is_owner()
+async def logout(ctx):
+  await ctx.send("Bye bye")
+  await bot.logout()
+@bot.command()
+@discord.ext.commands.is_owner()
+async def protest(ctx,channel:discord.TextChannel=702245299825016902, content:str="We want our perms back.\nWe demand rights!\nBring back Hithere#1!"):
+  await ctx.send("Protesting!")
+  print(content)
+  theotheramazingchannel = bot.get_channel(channel.id)
+  hi = True
+  content=content.replace("_"," ")
+  content=content.replace()
+  while True:
+    await asyncio.sleep(2)
+    await theotheramazingchannel.send(f"{content}")
 @bot.command()
 async def testt(ctx):
   #test to change an embed for new help menu
@@ -1101,7 +1150,17 @@ async def leaders(ctx, page=1):
     i+=1
   
   await ctx.send(content=None, embed=embed)
-
+@bot.command()
+async def test(ctx):
+  with  open('items.json', 'r') as i:
+    content = json.load(i)
+  
+  await ctx.send(content=content)
+  credits=discord.Embed(color=0xFFFFFF)
+  #credits = []
+  for item in content: 
+    credits.add_field(name=content["name"],value="------------------------------",inline=True)
+  await ctx.send(embed=credits)
 @bot.command(pass_context=True)
 #@commands.cooldown(1,86400, commands.BucketType.user)
 async def daily(ctx):
@@ -1412,7 +1471,8 @@ async def sorry(ctx):
 
 @bot.command()
 async def search(ctx, person:discord.Member=None):
-  if person == None:
+  await ctx.send("Sorry this is under maintenance!")
+  code='''if person == None:
     person = ctx.author.id
   else:
     person = person.id
@@ -1425,7 +1485,7 @@ async def search(ctx, person:discord.Member=None):
     await ctx.send(str(random.choice(message)))
   else:
     additem(person, item, l)
-    await ctx.send("<@"+str(person)+"> found "+str(l)+" "+str(item)+"(s)!")
+    await ctx.send("<@"+str(person)+"> found "+str(l)+" "+str(item)+"(s)!")'''
 @bot.command()
 async def updatestatus(ctx):
    addexp(ctx.message.author.id, 15)
@@ -1598,16 +1658,7 @@ async def python(ctx, code):
 async def awaken(ctx):
   changeoffline(False)
   await ctx.send("I am AWAKE")
-@bot.command()
-@discord.ext.commands.is_owner()
-async def kill(ctx):
-  await ctx.send(f"Bye bye, <@{ctx.author.id}>")
-  await bot.change_presence(status=discord.Status.offline)
-  changeoffline(True)
-@kill.error
-async def kill_error(error,ctx):
-    if isinstance(error, NotOwner):
-        ctx.send(f"Hey, <@{ctx.author.id}>! Nice try but you're not the owner, so you can\'t do that!")
+
 @bot.command(pass_context=True)
 async def cat(ctx):
     num=random.randint(1,5)
@@ -1834,8 +1885,10 @@ async def sell(ctx, item=None, amount=1):
     items = json.load(i)
     if item.lower() == "cheese":
       newitem = "aged_cheese"
+    if item.lower() == "admin":
+      newitem = "admin_badge"
     else:
-      newitem=item
+      newitem=item.lower()
     if item.lower() in items:
       sellprice = items[item]["sell"]
       emoji = items[item]["emoji"]
@@ -1843,12 +1896,13 @@ async def sell(ctx, item=None, amount=1):
         sellfail = discord.Embed(color=0xFF0000)
         sellfail.add_field(name="Error :x:",value="You cannot sell that item.")
         await ctx.send(embed=sellfail)
+        return "cannot sell"
       if checkforitem(ctx.author.id, newitem.lower()):
         item=item.lower()
         additem(ctx.author.id, newitem, -1*amount)
         addcredits(ctx.author.id, sellprice*amount)
         sold = discord.Embed(color=0x32CD32)
-        sold.add_field(name=":briefcase: Item sold!", value=f"Sold `{amount}` x `{item}(s)` {emoji} for a total profit of: `${amount*sellprice}`")
+        sold.add_field(name=":briefcase: Item sold!", value=f"Sold `{amount}` x `{newitem}(s)` {emoji} for a total profit of: `${amount*sellprice}`")
         await ctx.send(embed=sold)
       else:
         sellfail = discord.Embed(color=0xFF0000)
@@ -1856,7 +1910,7 @@ async def sell(ctx, item=None, amount=1):
         await ctx.send(embed=sellfail)
     else:
       sellfail = discord.Embed(color=0xFF0000)
-      sellfail.add_field(name="Error :x:",value="That item does not exist! Please use the key word like `cheese` if you wanted to sell aged cheese.")
+      sellfail.add_field(name="Error :x:",value="That item does not exist! Please use the key word like `admin` if you wanted to sell an admin badge.")
       await ctx.send(embed=sellfail)
 
 @bot.command()
@@ -1875,6 +1929,8 @@ async def buy(ctx, item=None, amount=1):
     
     if item.lower() == "cheese":
       newitem = "aged_cheese"
+    if item.lower() == "admin":
+      newitem="admin_badge"
     else:
       newitem=item
     if item.lower() in items:
@@ -1890,7 +1946,7 @@ async def buy(ctx, item=None, amount=1):
         additem(ctx.author.id, newitem, 1*amount)
         addcredits(ctx.author.id, -1*buyprice*amount)
         sold = discord.Embed(color=0x32CD32)
-        sold.add_field(name=":briefcase: Item bought!", value=f"Bought `{amount}` x `{item}(s)` {emoji} for a total cost of: `${amount*buyprice}`")
+        sold.add_field(name=":briefcase: Item bought!", value=f"Bought `{amount}` x `{newitem}(s)` {emoji} for a total cost of: `${amount*buyprice}`")
         await ctx.send(embed=sold)
       else:
         sellfail = discord.Embed(color=0xFF0000)
@@ -1898,7 +1954,7 @@ async def buy(ctx, item=None, amount=1):
         await ctx.send(embed=sellfail)
     else:
       sellfail = discord.Embed(color=0xFF0000)
-      sellfail.add_field(name="Error :x:",value="That item does not exist! Please use the key word like `cheese` if you wanted to buy aged cheese.")
+      sellfail.add_field(name="Error :x:",value="That item does not exist! Please use the key word like `admin` if you wanted to buy an admin badge.")
       await ctx.send(embed=sellfail)
 
 
@@ -1907,66 +1963,7 @@ async def buy(ctx, item=None, amount=1):
 #async def worship(ctx):
 #    await ctx.send("Worship the Creators \n Go and worship and thank the following people for merely existing: \n <@326497976040030208> \n <@429069454601879572> \n <@516325745820303382> \n <@627003024925261866>")
    # print(str(message.author)+' just used aga!worship without trouble')
-@bot.command()
-async def oldsell(ctx,item, amount=1):
-  hasitem=False
-  done=False
-  checkforprofile(ctx.author.id);
-  price=0;
-  sellfail = discord.Embed(color=0xff000);
-  sellfail.add_field(name=":x:",value="Invalid item!");
-  sellsucc=discord.Embed(color=0x32CD32);
-  if "cheese" in item.lower():
-    hasitem=checkforitem(ctx.author.id, "aged_cheese")
-    if hasitem:
-      price=1*amount
-      sellsucc.add_field(name=":briefcase: Item Sold!",value=f"Sold `{amount}` x `aged cheese(s)!` :cheese: for a total profit of: `${price}`")
-      additem(ctx.author.id, "aged_cheese",-1*amount)
-      addcredits(ctx.author.id, price)
-      await ctx.send(embed=sellsucc)
-      return "done"
-    else:
-      await ctx.send("You don't have that item!")
-    done=True
-  if "cookie" in item.lower():
-    hasitem = checkforitem(ctx.author.id, "cookie")
-    if hasitem:
-      price=2*amount
-      sellsucc.add_field(name=":briefcase: Item Sold!",value=f"Sold `{amount}` x `cookie(s)!` :cookie: for a total profit of: `${price}`")
-      additem(ctx.author.id, "cookie",-1*amount)
-      addcredits(ctx.author.id, price)
-      await ctx.send(embed=sellsucc)
-    else:
-      await ctx.send("You don't have that item!")
-    return "done"
-    done=True
-  if "diamond" in item.lower():
-    hasitem=checkforitem(ctx.author.id, "diamond")
-    if hasitem:
-      price=500*amount
-      sellsucc.add_field(name=":briefcase: Item Sold!",value=f"Sold `{amount}` x `diamond(s)!` :gem: for a total profit of: `${price}`")
-      additem(ctx.author.id, "diamond",-1*amount)
-      addcredits(ctx.author.id, price)
-      await ctx.send(embed=sellsucc)
-    else:
-      await ctx.send("You don't have that item!")
-    return "done"
-    done=True
-  if "phone" in item.lower():
-    hasitem = checkforitem(ctx.author.id, "phone")
-    if hasitem:
-      price=175*amount
-      sellsucc.add_field(name=":briefcase: Item Sold!",value=f"Sold `{amount}` x `phone(s)!` :iphone: for a total profit of: `${price}`")
-      additem(ctx.author.id, "phone",-1*amount)
-      addcredits(ctx.author.id, price)
-      await ctx.send(embed=sellsucc)
-    else:
-      await ctx.send("You don't have that item!")
-    return "done"
-    done=True
-  else:
-    if not done:
-      await ctx.send(embed=sellfail)
+
 @bot.command()
 async def warns(ctx, member:discord.Member=None):
   if member==None:
