@@ -670,6 +670,9 @@ async def on_message(message):
 [ ADMIN BADGE ][ KEY: ADMIN ]
 < BUY: $50 > < SELL: N/A >
 > YAY! YOU GOT NOTHING!
+[ CHARGER ][ KEY: CHARGER ]
+< BUY: $10 > < SELL: $7 >
+> A CHARGER TO CHARGE RANDOM THINGS!
 ```
         ''', inline=False)
         await message.channel.send(embed=theshop)
