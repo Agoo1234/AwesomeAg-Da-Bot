@@ -252,7 +252,15 @@ def addwarns(userid,serverid,warntype,n):
     with open("warn.json", mode="w") as w:
         json.dump(warn, w)
         # update json
-
+def createnewitem(key ,name, buy, sell, emoji, desc, use, command):
+  #"admin":{"name":"admin_badge","buy":50,"sell":null,"emoji":":beginner:","desc":"Yay! You got nothing!", "use":"You feel like you own everything. You type aga!daily into your computer and earn 100 credits for a second daily! The best part: your daily time still stays the same.", "command":"addcredits(ctx.author.id,100)"}
+  with open("items.json",mode="r") as i:
+    items = json.load(i)
+    dict_value = {key:{"name":name, "buy":int(buy),"sell":int(sell),"emoji":emoji,"desc":desc,"use":use,"command":command}}
+    items.update(dict_value)
+  with open("items.json", mode="w") as i:
+        json.dump(items, i)
+        # update json
 #
 #def checkforprofile(userid):
 #    with open("gp.json", mode="r") as g:
@@ -913,8 +921,8 @@ async def on_message(message):
           if message.channel.guild.id in allowedguilds and message.author.id != 627003024925261866:
                 if rareevent1 != True:
                       rareevent = True
-                      will = random.randint(1,100)
-                      if will == 5:
+                      will = random.randint(1,1000)
+                      if will == random.randint(1,1000):
                             acts =['hithere','hehe hehe hehehhehehe', 'client.on("message", msg => { if(msg.author.id != client.user.id && msg.content.indexOf("hehe") > -1) msg.channel.send("hehe") });']
                             act = random.choice(acts)
                             hi = await message.channel.send(f"A rare event occured! Whoever typed the last message has to type \n `{act}` in 10 seconds before they lose 9999 ADB coins!")
@@ -1869,7 +1877,37 @@ async def use(ctx, item=None):
       fail = discord.Embed(color=0xFF0000)
       fail.add_field(name="Error :x:",value="That doesn't exist!",inline=False)
       await ctx.send(embed=fail)
-        
+@bot.command()
+@discord.ext.commands.is_owner()
+async def createitem(ctx):#,key, name,buy, sell,  emoji, desc, use, command):
+  def check(m):
+    return m.author==ctx.author and m.channel== ctx.channel
+  await ctx.send("Key")
+  key = await bot.wait_for('message',check=check, timeout=300)
+  key = key.content
+  await ctx.send("Name")
+  name = await bot.wait_for('message',check=check, timeout=300)
+  name = name.content
+  await ctx.send("Buy")
+  buy = await bot.wait_for('message',check=check, timeout=300)
+  buy = buy.content
+  await ctx.send("Sell")
+  sell = await bot.wait_for('message',check=check, timeout=300)
+  sell = sell.content
+  await ctx.send("emoji")
+  emoji = await bot.wait_for('message',check=check, timeout=300)
+  emoji = emoji.content
+  await ctx.send("desc")
+  desc = await bot.wait_for('message',check=check, timeout=300)
+  desc = desc.content
+  await ctx.send("Use")
+  use = await bot.wait_for('message',check=check, timeout=300)
+  use = use.content
+  await ctx.send("Command")
+  command = await bot.wait_for('message',check=check, timeout=300)
+  command = command.content
+  createnewitem(key=key,name=name, buy=buy, sell=sell, emoji=emoji, desc=desc, use=use, command=command )
+  await ctx.send("Created item")    
 @bot.command()
 async def sell(ctx, item=None, amount=1):
   checkforprofile(ctx.author.id)
