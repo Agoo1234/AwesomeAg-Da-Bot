@@ -91,8 +91,25 @@ async def on_ready():
     #activity = discord.Activity(name='my activity', type=discord.ActivityType.watching)
    #$ await bot.change_presence(activity=activity)
 
+@bot.command(pass_context=True, aliases=["j","joi","joinchannel"])
+async def join(ctx, vchannel=695027267948249222):
+  #channel = ctx.message.author.voice
+  if vchannel == 695027267948249222:
+    thechannel = bot.get_channel(695027267948249222)
+  else:
+    thechannel = bot.get_channel(vchannel)
+  await thechannel.connect(timeout=60,reconnect=True)
+  await ctx.send(f"Connected to {thechannel.mention}!")
 
-
+@bot.command(pass_context=True, aliases=["l","disc","disconnect"])
+async def leave(ctx, vchannel=695027267948249222):
+  #channel = ctx.message.author.voice
+  await ctx.voice_client.disconnect()
+  if vchannel == 695027267948249222:
+    thechannel = bot.get_channel(695027267948249222)
+  else:
+    thechannel = bot.get_channel(vchannel)
+  await ctx.send(f"Disconnected from {thechannel.mention}!")
 
 
 async def change_status():
@@ -639,39 +656,39 @@ async def on_message(message):
         checkforprofile(message.author.id)
         shop = discord.Embed(title=":shopping_bags: Item Shop", description="`aga!buy` ta waste money on random stuff", color = 0x006994)
         theshop = discord.Embed(title=":shopping_bags: Item Shop", description="`aga!buy` ta waste money on random stuff", color = 0x006994)
-        shop.add_field(name="Aged Cheese :cheese: Buy: $1 Sell: $1", value="-----------------------------------------------", inline=False)
-        shop.add_field(name="Cookie :cookie: Buy: $5 Sell: $2", value="-----------------------------------------------", inline=False)
-        shop.add_field(name="Phone :iphone: Buy: $300 Sell: $175", value="-----------------------------------------------", inline=False)
-        shop.add_field(name="Diamond :gem: Buy: N/A Sell: $500", value="-----------------------------------------------", inline=False)
-        shop.add_field(name="Computer :computer: Buy: $1000 Sell: $750", value="-----------------------------------------------", inline=False)
-        shop.add_field(name="ADMIN BADGE :beginner: Buy: $50 Sell: N/A", value="-----------------------------------------------", inline=False)
+        shop.add_field(name="Aged Cheese :cheese: Buy: $100 Sell: $100", value="-----------------------------------------------", inline=False)
+        shop.add_field(name="Cookie :cookie: Buy: $500 Sell: $200", value="-----------------------------------------------", inline=False)
+        shop.add_field(name="Phone :iphone: Buy: $30000 Sell: $17500", value="-----------------------------------------------", inline=False)
+        shop.add_field(name="Diamond :gem: Buy: N/A Sell: $50000", value="-----------------------------------------------", inline=False)
+        shop.add_field(name="Computer :computer: Buy: $100000 Sell: $75000", value="-----------------------------------------------", inline=False)
+        shop.add_field(name="ADMIN BADGE :beginner: Buy: $5000 Sell: N/A", value="-----------------------------------------------", inline=False)
         theshop.add_field(name="Items:",value='''
         ```md
 [ AGED CHEESE ][ KEY: CHEESE ]
-< BUY: $1 > < SELL: $1 >
+< BUY: $100 > < SELL: $100 >
 > YUMMY?
 
 [ COOKIE ][ KEY: COOKIE ]
-< BUY: $5 > < SELL: $2 >
+< BUY: $500 > < SELL: $200 >
 > Careful! Hot!
 
 [ PHONE ][ KEY: PHONE ]
-< BUY: $300 > < SELL: $175 >
+< BUY: $30000 > < SELL: $17500 >
 > GET DISCORD ON YOUR PHONE!
 
 [ DIAMOND ][ KEY: DIAMOND ]
-< BUY: N/A > < SELL: $500 >
+< BUY: N/A > < SELL: $50000 >
 > SHINY!
 
 [ COMPUTER ][ KEY: COMPUTER ]
-< BUY: $1000 > < SELL: $750 >
+< BUY: $100000 > < SELL: $75000 >
 > AREN'T YOU ALREADY ON ONE?
 
 [ ADMIN BADGE ][ KEY: ADMIN ]
-< BUY: $50 > < SELL: N/A >
+< BUY: $5000 > < SELL: N/A >
 > YAY! YOU GOT NOTHING!
 [ CHARGER ][ KEY: CHARGER ]
-< BUY: $10 > < SELL: $7 >
+< BUY: $1000 > < SELL: $700 >
 > A CHARGER TO CHARGE RANDOM THINGS!
 ```
         ''', inline=False)
@@ -1451,7 +1468,8 @@ async def sorry(ctx):
 
 @bot.command()
 async def search(ctx, person:discord.Member=None):
-  #await ctx.send("Sorry this is under maintenance!")
+  await ctx.send("Sorry this is under maintenance!")
+  comment='''
   if person == None:
     person = ctx.author.id
   else:
@@ -1519,7 +1537,7 @@ async def get(ctx, message):
   await asyncio.sleep(4)
   await ctx.send(f"+Buy 5 {message}")
 bot.remove_command("help")
-@bot.command(pass_context=True)
+@bot.command(pass_context=True, aliases=["hel","h"])
 async def help(ctx):
         help1 = discord.Embed(title="AwesomeAg Da Bot", description="A bot hosted on repl.it and made by AwesomeAg. \n List of commands and descriptions are:",  color=0x0000FF)
         help1.add_field(name = '1', value="||aga!add X Y|| : Gives the addition of **X** and **Y**")
@@ -1911,7 +1929,7 @@ async def createitem(ctx):#,key, name,buy, sell,  emoji, desc, use, command):
   command = command.content
   createnewitem(key=key,name=name, buy=buy, sell=sell, emoji=emoji, desc=desc, use=use, command=command )
   await ctx.send("Created item")    
-@bot.command()
+@bot.command(aliases=["s","give","sel","se"])
 async def sell(ctx, item=None, amount=1):
   checkforprofile(ctx.author.id)
   if item == None:
@@ -1955,7 +1973,7 @@ async def sell(ctx, item=None, amount=1):
       sellfail.add_field(name="Error :x:",value="That item does not exist! Please use the key word like `admin` if you wanted to sell an admin badge.")
       await ctx.send(embed=sellfail)
 
-@bot.command()
+@bot.command(aliases=["b"])
 async def buy(ctx, item=None, amount=1):
   checkforprofile(ctx.author.id)
   if item == None:
